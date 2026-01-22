@@ -1,12 +1,112 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-    <title>Monitoreo GPRS</title>
-    <meta http-equiv="refresh" content="5">
+    <meta charset="UTF-8">
+    <title>DWDM – ITU-T G.694.1</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            background-color: #f7f9fb;
+        }
+
+        h1, h2 {
+            color: #003366;
+        }
+
+        p {
+            max-width: 900px;
+            text-align: justify;
+        }
+
+        table {
+            border-collapse: collapse;
+            margin-top: 30px;
+            width: 100%;
+            font-size: 14px;
+        }
+
+        th, td {
+            border: 1px solid #aaa;
+            padding: 6px 8px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #003366;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #eef2f7;
+        }
+    </style>
 </head>
 <body>
-    <h1>Estado del Sistema</h1>
-    <p><b>MQ2:</b> {{ data.mq2 }}</p>
-    <p><b>Puerta:</b> {{ data.door }}</p>
+
+<h1>Sistemas DWDM – Rejilla Fija ITU-T G.694.1</h1>
+
+<p>
+Los sistemas de <b>Multiplexación por División en Longitud de Onda Densa (DWDM)</b>
+permiten transmitir múltiples canales ópticos sobre una misma fibra,
+asignando a cada canal una frecuencia central específica.
+</p>
+
+<p>
+La recomendación <b>ITU-T G.694.1</b> define una rejilla de frecuencias
+anclada a <b>193.1 THz</b>, a partir de la cual se generan los canales DWDM
+mediante diferentes espaciamientos o granularidades.
+</p>
+
+<h2>Granularidad y espaciamiento de canales</h2>
+
+<p>
+La granularidad mínima definida por la ITU es de <b>12.5 GHz</b>.
+A partir de esta rejilla base se derivan subconjuntos de frecuencias
+con separaciones mayores:
+</p>
+
+<ul>
+    <li><b>12.5 GHz:</b> Granularidad base (flex-grid y planificación espectral).</li>
+    <li><b>25 GHz:</b> Canales con índice <i>n</i> par.</li>
+    <li><b>50 GHz:</b> DWDM clásico (índice <i>n</i> múltiplo de 4).</li>
+    <li><b>100 GHz:</b> Separación amplia (índice <i>n</i> múltiplo de 8).</li>
+</ul>
+
+<p>
+Las longitudes de onda mostradas son <b>aproximadas</b> y se calculan a partir
+de la frecuencia nominal usando la velocidad de la luz en el vacío:
+<b>2.99792458 × 10⁸ m/s</b>.
+</p>
+
+<h2>Tabla de frecuencias nominales DWDM</h2>
+
+<table>
+    <tr>
+        <th>12.5 GHz (THz)</th>
+        <th>25 GHz (THz)</th>
+        <th>50 GHz (THz)</th>
+        <th>100 GHz+ (THz)</th>
+        <th>Longitud de onda (nm)</th>
+    </tr>
+
+    {% for fila in tabla %}
+    <tr>
+        <td>{{ fila.f_12 }}</td>
+        <td>{{ fila.f_25 if fila.f_25 else "–" }}</td>
+        <td>{{ fila.f_50 if fila.f_50 else "–" }}</td>
+        <td>{{ fila.f_100 if fila.f_100 else "–" }}</td>
+        <td>{{ fila.lambda_nm }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+<p style="margin-top: 40px; font-size: 13px;">
+<b>Nota:</b> De acuerdo con la ITU-T G.694.1, las especificaciones DWDM
+se definen con respecto a las <b>frecuencias nominales</b>.
+Las longitudes de onda se incluyen únicamente como referencia aproximada.
+</p>
+
 </body>
 </html>
+
