@@ -1,78 +1,136 @@
-from flask import Flask, render_template
-import math
+# ============================================================
+# ITU-T G.694.1 – DWDM
+# TABLAS AGRUPADAS POR ESPACIAMIENTO DE CANAL
+# ============================================================
+#
+# DESCRIPCIÓN GENERAL:
+# --------------------
+# Este programa implementa la rejilla DWDM definida en la
+# recomendación ITU-T G.694.1, utilizando una granularidad
+# mínima de 12.5 GHz anclada a la frecuencia de referencia
+# de 193.1 THz.
+#
+# A partir del grid base de 12.5 GHz, se generan subconjuntos
+# de canales que cumplen con espaciamientos mayores:
+#
+#  - 25  GHz  → canales con índice n par
+#  - 50  GHz  → canales con índice n múltiplo de 4
+#  - 100 GHz  → canales con índice n múltiplo de 8
+#
+# NOTA IMPORTANTE:
+# ----------------
+# Las longitudes de onda calculadas son APROXIMADAS.
+# De acuerdo con la ITU-T, las especificaciones DWDM
+# se definen con respecto a la frecuencia nominal central
+# y no a la longitud de onda.
+#
+# ============================================================
 
-app = Flask(__name__)
+# -----------------------------
+# CONSTANTES FÍSICAS Y NORMATIVAS
+# -----------------------------
+C = 2.99792458e8      # Velocidad de la luz en el vacío (m/s)
+F_REF = 193.1         # Frecuencia de referencia ITU (THz)
+DELTA_F = 0.0125      # Granularidad mínima (THz = 12.5 GHz)
 
-# ==============================
-# CONSTANTES DEL SISTEMA DWDM
-# ==============================
-
-# Velocidad de la luz en el vacío (m/s) según ITU-T
-C = 2.99792458e8
-
-# Frecuencia de referencia ITU-T (THz)
-F_REF = 193.1
-
-# Espaciamientos de canal en THz
-SPACINGS = {
-    "12.5 GHz": 0.0125,
-    "25 GHz": 0.025,
-    "50 GHz": 0.05,
-    "100 GHz": 0.1
-}
-
-# Rango de índices n (canales alrededor de la frecuencia central)
-N_RANGE = range(-8, 9)
+# Rango ilustrativo de frecuencias (Bandas C + L)
+# NOTA: Los extremos son ilustrativos, no normativos
+F_MIN = 184.5000
+F_MAX = 195.9375
 
 
-# ==============================
-# FUNCIONES DE CÁLCULO
-# ==============================
-
-def frecuencia_a_longitud_onda(freq_thz):
+# -----------------------------
+# FUNCIONES AUXILIARES
+# -----------------------------
+def frecuencia_a_lambda_nm(f_thz):
     """
-    Convierte frecuencia (THz) a longitud de onda (nm)
+    Convierte una frecuencia en THz a longitud de onda en nm.
+    
+    NOTA:
+    -----
+    Esta conversión se realiza usando la velocidad de la luz
+    en el vacío. El resultado es una aproximación, tal como
+    se presenta en las tablas de la ITU-T G.694.1.
     """
-    freq_hz = freq_thz * 1e12
-    lambda_m = C / freq_hz
-    return lambda_m * 1e9
+    return (C / (f_thz * 1e12)) * 1e9
 
 
-def generar_tablas_dwdm():
+def generar_tablas_por_espaciamiento():
     """
-    Genera las tablas DWDM para diferentes granularidades
-    definidas por la recomendación ITU-T G.694.1
-    """
-    tablas = {}
+    Genera tablas DWDM independientes para cada espaciamiento
+    de canal definido en la ITU-T G.694.1.
 
-    for nombre, paso in SPACINGS.items():
-        filas = []
-        for n in N_RANGE:
-            freq = F_REF + n * paso
-            lambda_nm = frecuencia_a_longitud_onda(freq)
-            filas.append({
-                "n": n,
-                "frecuencia": round(freq, 4),
-                "longitud_onda": round(lambda_nm, 4)
-            })
-        tablas[nombre] = filas
+    TABLAS GENERADAS:
+    -----------------
+    - 12.5 GHz : Grid base (todos los canales)
+    - 25  GHz  : Subconjunto del grid base
+    - 50  GHz  : Subconjunto del grid base
+    - 100 GHz  : Subconjunto del grid base
+
+    NOTA:
+    -----
+    Todos los espaciamientos mayores se obtienen a partir
+    del grid base de 12.5 GHz, seleccionando únicamente
+    los canales que cumplen con la condición de índice n.
+    """
+
+    tablas = {
+        "12.5 GHz": [],
+        "25 GHz": [],
+        "50 GHz": [],
+        "100 GHz": []
+    }
+
+    # Cálculo del rango del índice n
+    n_min = int(round((F_MIN - F_REF) / DELTA_F))
+    n_max = int(round((F_MAX - F_REF) / DELTA_F))
+
+    for n in range(n_min, n_max + 1):
+
+        # Frecuencia nominal central (THz)
+        f = round(F_REF + n * DELTA_F, 4)
+
+        # Longitud de onda aproximada (nm)
+        lambda_nm = round(frecuencia_a_lambda_nm(f), 4)
+
+        # Grid base: siempre válido
+        tablas["12.5 GHz"].append((n, f, lambda_nm))
+
+        # Subgrids según ITU-T G.694.1
+        if n % 2 == 0:
+            tablas["25 GHz"].append((n, f, lambda_nm))
+
+        if n % 4 == 0:
+            tablas["50 GHz"].append((n, f, lambda_nm))
+
+        if n % 8 == 0:
+            tablas["100 GHz"].append((n, f, lambda_nm))
 
     return tablas
 
 
-# ==============================
-# RUTA PRINCIPAL
-# ==============================
+def imprimir_tabla(nombre, filas):
+    """
+    Imprime una tabla DWDM correspondiente a un
+    espaciamiento de canal específico.
+    """
 
-@app.route("/")
-def index():
-    tablas = generar_tablas_dwdm()
-    return render_template("index.html", tablas=tablas)
+    print("\n" + "=" * 65)
+    print(f"TABLA DWDM – ESPACIAMIENTO {nombre}")
+    print("=" * 65)
+    print(f"{'n':>5} | {'Frecuencia nominal (THz)':>22} | {'Lambda aprox. (nm)':>20}")
+    print("-" * 65)
+
+    for n, f, lam in filas:
+        print(f"{n:5d} | {f:22.4f} | {lam:20.4f}")
 
 
-# ==============================
-# EJECUCIÓN
-# ==============================
-
+# -----------------------------
+# EJECUCIÓN PRINCIPAL
+# -----------------------------
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=True)
+
+    tablas = generar_tablas_por_espaciamiento()
+
+    for nombre, filas in tablas.items():
+        imprimir_tabla(nombre, filas)
