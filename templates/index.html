@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Rejilla DWDM – ITU-T G.694.1</title>
+    <title>DWDM - Rejilla ITU-T G.694.1</title>
 
     <style>
         body {
@@ -31,8 +31,8 @@
         table {
             border-collapse: collapse;
             width: 100%;
-            margin-bottom: 40px;
             background-color: white;
+            margin-top: 15px;
         }
 
         th, td {
@@ -49,12 +49,26 @@
         p {
             text-align: justify;
         }
+
+        button {
+            background-color: #003366;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+
+        button:hover {
+            background-color: #0055aa;
+        }
     </style>
 </head>
 
 <body>
 
-<!-- ================= ENCABEZADO ACADÉMICO ================= -->
+<!-- ================= ENCABEZADO ================= -->
 
 <header>
     <img src="{{ url_for('static', filename='logo_epn.png') }}" alt="Logo EPN">
@@ -72,27 +86,34 @@
 <h1>Rejilla DWDM según ITU-T G.694.1</h1>
 
 <p>
-La multiplexación por división de longitud de onda densa (DWDM) permite transmitir
-múltiples canales ópticos sobre una sola fibra utilizando frecuencias centrales
-normalizadas. La recomendación ITU-T G.694.1 define una rejilla fija basada en una
-frecuencia de referencia de <b>193.1 THz</b>.
+La recomendación ITU-T G.694.1 define una rejilla fija de frecuencias
+centrales para sistemas DWDM, basada en una frecuencia de referencia
+de <b>193.1 THz</b>. A partir de esta referencia se generan los canales
+con una granularidad mínima de 12.5 GHz.
 </p>
 
 <p>
-Las siguientes tablas muestran las frecuencias nominales centrales y sus longitudes
-de onda aproximadas para distintas granularidades de canal.
+Las tablas siguientes muestran los canales ópticos para diferentes
+espaciamientos de frecuencia, los cuales se derivan como subconjuntos
+del grid base.
 </p>
 
-<!-- ================= TABLAS ================= -->
+<!-- ================= TABLAS DESPLEGABLES ================= -->
 
 {% for nombre, filas in tablas.items() %}
 
 <h2>Espaciamiento de canal: {{ nombre }}</h2>
 
 <p>
-Esta tabla debe utilizarse cuando el sistema DWDM opera con una separación de
-<b>{{ nombre }}</b>, la cual define la granularidad espectral del sistema.
+Esta tabla corresponde a un sistema DWDM con espaciamiento de
+<b>{{ nombre }}</b>, derivado del grid base de 12.5 GHz.
 </p>
+
+<button onclick="toggleTabla('tabla_{{ loop.index }}')">
+    Mostrar / Ocultar tabla
+</button>
+
+<div id="tabla_{{ loop.index }}" style="display:none; margin-bottom:40px;">
 
 <table>
     <tr>
@@ -103,23 +124,33 @@ Esta tabla debe utilizarse cuando el sistema DWDM opera con una separación de
 
     {% for fila in filas %}
     <tr>
-        <td>{{ fila.n }}</td>
-        <td>{{ "%.4f"|format(fila.frecuencia) }}</td>
-        <td>{{ "%.4f"|format(fila.longitud_onda) }}</td>
+        <td>{{ fila[0] }}</td>
+        <td>{{ fila[1] }}</td>
+        <td>{{ fila[2] }}</td>
     </tr>
     {% endfor %}
 </table>
+
+</div>
 
 {% endfor %}
 
 <!-- ================= NOTA FINAL ================= -->
 
 <p>
-<b>Nota:</b> Las longitudes de onda mostradas son aproximaciones obtenidas a partir de
-la conversión frecuencia–longitud de onda usando la velocidad de la luz en el vacío
-(<i>c = 2.99792458 × 10⁸ m/s</i>). Las especificaciones DWDM se definen con respecto a la
-frecuencia central y no a la longitud de onda.
+<b>Nota:</b> Las longitudes de onda mostradas son valores aproximados
+calculados a partir de la conversión frecuencia–longitud de onda
+utilizando la velocidad de la luz en el vacío
+(<i>c = 2.99792458 × 10⁸ m/s</i>). En sistemas DWDM, las especificaciones
+normativas se definen con respecto a la frecuencia central.
 </p>
+
+<script>
+function toggleTabla(id) {
+    const div = document.getElementById(id);
+    div.style.display = (div.style.display === "none") ? "block" : "none";
+}
+</script>
 
 </body>
 </html>
