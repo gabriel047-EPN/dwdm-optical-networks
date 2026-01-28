@@ -68,11 +68,10 @@
 
 <body>
 
-<!-- ================= ENCABEZADO ================= -->
+<!-- ================= ENCABEZADO ACADÉMICO ================= -->
 
 <header>
     <img src="{{ url_for('static', filename='logo_epn.png') }}" alt="Logo EPN">
-
     <div>
         <h2>Escuela Politécnica Nacional</h2>
         <p><b>Asignatura:</b> Redes Ópticas</p>
@@ -89,13 +88,14 @@
 La recomendación ITU-T G.694.1 define una rejilla fija de frecuencias
 centrales para sistemas DWDM, basada en una frecuencia de referencia
 de <b>193.1 THz</b>. A partir de esta referencia se generan los canales
-con una granularidad mínima de 12.5 GHz.
+ópticos con una granularidad mínima de 12.5 GHz.
 </p>
 
 <p>
-Las tablas siguientes muestran los canales ópticos para diferentes
-espaciamientos de frecuencia, los cuales se derivan como subconjuntos
-del grid base.
+Las tablas siguientes muestran las frecuencias centrales nominales y
+sus longitudes de onda aproximadas para diferentes espaciamientos
+de canal. Debido a la gran cantidad de canales, las tablas se presentan
+de forma desplegable.
 </p>
 
 <!-- ================= TABLAS DESPLEGABLES ================= -->
@@ -106,7 +106,7 @@ del grid base.
 
 <p>
 Esta tabla corresponde a un sistema DWDM con espaciamiento de
-<b>{{ nombre }}</b>, derivado del grid base de 12.5 GHz.
+<b>{{ nombre }}</b>, derivado como subconjunto del grid base de 12.5 GHz.
 </p>
 
 <button onclick="toggleTabla('tabla_{{ loop.index }}')">
@@ -138,11 +138,11 @@ Esta tabla corresponde a un sistema DWDM con espaciamiento de
 <!-- ================= NOTA FINAL ================= -->
 
 <p>
-<b>Nota:</b> Las longitudes de onda mostradas son valores aproximados
-calculados a partir de la conversión frecuencia–longitud de onda
-utilizando la velocidad de la luz en el vacío
-(<i>c = 2.99792458 × 10⁸ m/s</i>). En sistemas DWDM, las especificaciones
-normativas se definen con respecto a la frecuencia central.
+<b>Nota:</b> Las longitudes de onda mostradas son aproximaciones obtenidas
+mediante la conversión frecuencia–longitud de onda usando la velocidad
+de la luz en el vacío (<i>c = 2.99792458 × 10⁸ m/s</i>). En aplicaciones DWDM,
+las especificaciones normativas se definen con respecto a la frecuencia
+central nominal.
 </p>
 
 <script>
