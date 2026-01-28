@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>DWDM - Rejilla ITU-T G.694.1</title>
+    <title>Rejilla DWDM – ITU-T G.694.1</title>
 
     <style>
         body {
@@ -75,14 +75,12 @@
 La multiplexación por división de longitud de onda densa (DWDM) permite transmitir
 múltiples canales ópticos sobre una sola fibra utilizando frecuencias centrales
 normalizadas. La recomendación ITU-T G.694.1 define una rejilla fija basada en una
-frecuencia de referencia de <b>193.1 THz</b>, a partir de la cual se generan los canales
-con diferentes separaciones de frecuencia.
+frecuencia de referencia de <b>193.1 THz</b>.
 </p>
 
 <p>
-Las tablas siguientes muestran las frecuencias nominales centrales y sus longitudes
-de onda aproximadas para distintas granularidades de canal: 12.5 GHz, 25 GHz,
-50 GHz y 100 GHz.
+Las siguientes tablas muestran las frecuencias nominales centrales y sus longitudes
+de onda aproximadas para distintas granularidades de canal.
 </p>
 
 <!-- ================= TABLAS ================= -->
@@ -93,7 +91,7 @@ de onda aproximadas para distintas granularidades de canal: 12.5 GHz, 25 GHz,
 
 <p>
 Esta tabla debe utilizarse cuando el sistema DWDM opera con una separación de
-<b>{{ nombre }}</b>, lo cual define la granularidad espectral del sistema.
+<b>{{ nombre }}</b>, la cual define la granularidad espectral del sistema.
 </p>
 
 <table>
@@ -106,8 +104,8 @@ Esta tabla debe utilizarse cuando el sistema DWDM opera con una separación de
     {% for fila in filas %}
     <tr>
         <td>{{ fila.n }}</td>
-        <td>{{ fila.frecuencia }}</td>
-        <td>{{ fila.longitud_onda }}</td>
+        <td>{{ "%.4f"|format(fila.frecuencia) }}</td>
+        <td>{{ "%.4f"|format(fila.longitud_onda) }}</td>
     </tr>
     {% endfor %}
 </table>
@@ -119,9 +117,10 @@ Esta tabla debe utilizarse cuando el sistema DWDM opera con una separación de
 <p>
 <b>Nota:</b> Las longitudes de onda mostradas son aproximaciones obtenidas a partir de
 la conversión frecuencia–longitud de onda usando la velocidad de la luz en el vacío
-(<i>c = 2.99792458 × 10⁸ m/s</i>). En aplicaciones DWDM, las especificaciones normativas
-se definen respecto a la frecuencia central y no a la longitud de onda.
+(<i>c = 2.99792458 × 10⁸ m/s</i>). Las especificaciones DWDM se definen con respecto a la
+frecuencia central y no a la longitud de onda.
 </p>
 
 </body>
 </html>
+
