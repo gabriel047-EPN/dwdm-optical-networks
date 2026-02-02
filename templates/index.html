@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <title>DWDM – ITU-T G.694.1</title>
 
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -24,7 +27,7 @@
             height: 80px;
         }
 
-        h1, h2, h3 {
+        h1, h2 {
             color: #003366;
         }
 
@@ -49,27 +52,15 @@
         button {
             background-color: #003366;
             color: white;
-            padding: 10px 15px;
+            padding: 8px 14px;
             border: none;
             cursor: pointer;
             margin-top: 10px;
         }
 
-        button:hover {
-            background-color: #0055aa;
-        }
-
         .contenido {
             display: none;
             margin-bottom: 40px;
-        }
-
-        img.grafico {
-            max-width: 100%;
-            background: white;
-            padding: 10px;
-            border: 1px solid #999;
-            margin-top: 15px;
         }
     </style>
 
@@ -96,28 +87,25 @@
 <h1>Rejilla DWDM – ITU-T G.694.1</h1>
 
 <p>
-La recomendación ITU-T G.694.1 define una rejilla DWDM fija anclada a
-<b>193.1 THz</b>. El índice <b>n</b> se mantiene constante para todas las
-separaciones; lo que cambia es qué valores de <b>n</b> son utilizados según
-la granularidad espectral.
+El índice <b>n</b> es común para toda la rejilla ITU-T.  
+Cada espaciamiento selecciona subconjuntos de <b>n</b> (pares, múltiplos de 4, 8, etc.).
 </p>
 
 {% for nombre, filas in tablas.items() %}
 <h2>Espaciamiento {{ nombre }}</h2>
 
-<button onclick="toggle('tabla{{ loop.index }}')">
+<button onclick="toggle('bloque{{ loop.index }}')">
     Mostrar / Ocultar tabla y gráfico
 </button>
 
-<div class="contenido" id="tabla{{ loop.index }}">
+<div class="contenido" id="bloque{{ loop.index }}">
 
 <table>
     <tr>
         <th>n</th>
         <th>Frecuencia (THz)</th>
-        <th>Longitud de onda (nm)</th>
+        <th>λ aproximada (nm)</th>
     </tr>
-
     {% for fila in filas %}
     <tr>
         <td>{{ fila.n }}</td>
@@ -127,22 +115,38 @@ la granularidad espectral.
     {% endfor %}
 </table>
 
-<h3>Representación gráfica</h3>
-<p>
-Se observa que al aumentar el espaciamiento de canal disminuye el número
-de frecuencias disponibles dentro del mismo rango espectral.
-</p>
+<canvas id="grafico{{ loop.index }}" height="100"></canvas>
 
-<img class="grafico"
-     src="{{ url_for('static', filename='grafico_' + nombre.replace(' ', '_').replace('.', '') + '.png') }}">
+<script>
+const ctx{{ loop.index }} = document.getElementById("grafico{{ loop.index }}");
+new Chart(ctx{{ loop.index }}, {
+    type: 'scatter',
+    data: {
+        datasets: [{
+            label: 'Frecuencia vs n',
+            data: [
+                {% for fila in filas %}
+                {x: {{ fila.n }}, y: {{ fila.f }}},
+                {% endfor %}
+            ],
+            backgroundColor: '#003366'
+        }]
+    },
+    options: {
+        scales: {
+            x: { title: { display: true, text: 'Índice n' } },
+            y: { title: { display: true, text: 'Frecuencia (THz)' } }
+        }
+    }
+});
+</script>
 
 </div>
 {% endfor %}
 
 <p>
-<b>Nota:</b> Las longitudes de onda son aproximadas y se obtienen usando
-<i>c = 2.99792458 × 10⁸ m/s</i>. En sistemas DWDM, las especificaciones
-normativas se definen respecto a la frecuencia central.
+<b>Nota:</b> Las longitudes de onda son aproximadas.  
+La especificación DWDM se define respecto a la frecuencia central.
 </p>
 
 </body>
