@@ -88,7 +88,7 @@
 
 <p>
 El índice <b>n</b> es común para toda la rejilla ITU-T.  
-Cada espaciamiento selecciona subconjuntos de <b>n</b> (pares, múltiplos de 4, 8, etc.).
+Cada espaciamiento selecciona subconjuntos de <b>n</b>.
 </p>
 
 {% for nombre, filas in tablas.items() %}
@@ -98,56 +98,5 @@ Cada espaciamiento selecciona subconjuntos de <b>n</b> (pares, múltiplos de 4, 
     Mostrar / Ocultar tabla y gráfico
 </button>
 
-<div class="contenido" id="bloque{{ loop.index }}">
+<div class="contenido" id="b
 
-<table>
-    <tr>
-        <th>n</th>
-        <th>Frecuencia (THz)</th>
-        <th>λ aproximada (nm)</th>
-    </tr>
-    {% for fila in filas %}
-    <tr>
-        <td>{{ fila.n }}</td>
-        <td>{{ fila.f }}</td>
-        <td>{{ fila.lambda }}</td>
-    </tr>
-    {% endfor %}
-</table>
-
-<canvas id="grafico{{ loop.index }}" height="100"></canvas>
-
-<script>
-const ctx{{ loop.index }} = document.getElementById("grafico{{ loop.index }}");
-new Chart(ctx{{ loop.index }}, {
-    type: 'scatter',
-    data: {
-        datasets: [{
-            label: 'Frecuencia vs n',
-            data: [
-                {% for fila in filas %}
-                {x: {{ fila.n }}, y: {{ fila.f }}},
-                {% endfor %}
-            ],
-            backgroundColor: '#003366'
-        }]
-    },
-    options: {
-        scales: {
-            x: { title: { display: true, text: 'Índice n' } },
-            y: { title: { display: true, text: 'Frecuencia (THz)' } }
-        }
-    }
-});
-</script>
-
-</div>
-{% endfor %}
-
-<p>
-<b>Nota:</b> Las longitudes de onda son aproximadas.  
-La especificación DWDM se define respecto a la frecuencia central.
-</p>
-
-</body>
-</html>
