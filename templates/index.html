@@ -4,99 +4,102 @@
     <meta charset="UTF-8">
     <title>DWDM – ITU-T G.694.1</title>
 
-    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 40px;
-            background-color: #f4f6f8;
-        }
-
-        header {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            border-bottom: 3px solid #003366;
-            padding-bottom: 15px;
-            margin-bottom: 30px;
-        }
-
-        header img {
-            height: 80px;
-        }
-
-        h1, h2 {
-            color: #003366;
-        }
-
-        table {
-            border-collapse: collapse;
-            width: 100%;
-            background: white;
-            margin-top: 15px;
-        }
-
-        th, td {
-            border: 1px solid #999;
-            padding: 6px;
-            text-align: center;
-        }
-
-        th {
-            background-color: #003366;
-            color: white;
-        }
-
-        button {
-            background-color: #003366;
-            color: white;
-            padding: 8px 14px;
-            border: none;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-
-        .contenido {
-            display: none;
-            margin-bottom: 40px;
-        }
+        body { font-family: Arial; margin: 40px; background: #f4f6f8; }
+        h1, h2 { color: #003366; }
+        table { border-collapse: collapse; width: 100%; background: white; }
+        th, td { border: 1px solid #999; padding: 6px; text-align: center; }
+        th { background: #003366; color: white; }
+        button { background: #003366; color: white; padding: 8px 14px; border: none; }
+        .contenido { display: none; margin-bottom: 40px; }
     </style>
 
     <script>
         function toggle(id) {
-            const div = document.getElementById(id);
-            div.style.display = div.style.display === "none" ? "block" : "none";
+            const d = document.getElementById(id);
+            d.style.display = d.style.display === "none" ? "block" : "none";
         }
     </script>
 </head>
 
 <body>
 
-<header>
-    <img src="{{ url_for('static', filename='logo_epn.png') }}">
-    <div>
-        <h2>Escuela Politécnica Nacional</h2>
-        <p><b>Asignatura:</b> Redes Ópticas</p>
-        <p><b>Integrantes:</b> Gabriel Palma, Micaela Ortiz</p>
-        <p><b>Semestre:</b> 2025-B</p>
-    </div>
-</header>
-
 <h1>Rejilla DWDM – ITU-T G.694.1</h1>
 
-<p>
-El índice <b>n</b> es común para toda la rejilla ITU-T.  
-Cada espaciamiento selecciona subconjuntos de <b>n</b>.
-</p>
-
 {% for nombre, filas in tablas.items() %}
+
 <h2>Espaciamiento {{ nombre }}</h2>
 
 <button onclick="toggle('bloque{{ loop.index }}')">
     Mostrar / Ocultar tabla y gráfico
 </button>
 
-<div class="contenido" id="b
+<div class="contenido" id="bloque{{ loop.index }}">
+
+<table>
+    <tr>
+        <th>n</th>
+        <th>Frecuencia (THz)</th>
+        <th>λ (nm)</th>
+    </tr>
+    {% for fila in filas %}
+    <tr>
+        <td>{{ fila.n }}</td>
+        <td>{{ fila.f }}</td>
+        <td>{{ fila.lambda }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+<canvas id="grafico{{ loop.index }}" height="140"></canvas>
+
+<script>
+const filas{{ loop.index }} = [
+    {% for fila in filas %}
+    { n: {{ fila.n }}, f: {{ fila.f }} },
+    {% endfor %}
+];
+
+let m;
+{% if nombre == "12.5 GHz" %} m = 1;
+{% elif nombre == "25 GHz" %} m = 2;
+{% elif nombre == "50 GHz" %} m = 4;
+{% elif nombre == "100 GHz" %} m = 8;
+{% endif %}
+
+const deltaF = 0.0125;
+const halfBW = (m * deltaF) / 2;
+
+const data = filas{{ loop.index }}.map(c => ({
+    y: c.n,
+    x: [c.f - halfBW, c.f + halfBW]
+}));
+
+new Chart(document.getElementById("grafico{{ loop.index }}"), {
+    type: 'bar',
+    data: {
+        datasets: [{
+            label: `Canales flex-grid (m = ${m})`,
+            data: data,
+            backgroundColor: '#003366'
+        }]
+    },
+    options: {
+        indexAxis: 'y',
+        scales: {
+            x: { title: { display: true, text: 'Frecuencia (THz)' } },
+            y: { title: { display: true, text: 'Índice n' } }
+        }
+    }
+});
+</script>
+
+</div>
+
+{% endfor %}
+
+</body>
+</html>
 
