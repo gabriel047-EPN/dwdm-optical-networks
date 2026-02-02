@@ -1,5 +1,4 @@
 from flask import Flask, render_template
-import matplotlib.pyplot as plt
 import os
 
 app = Flask(__name__)
@@ -11,7 +10,6 @@ C = 2.99792458e8      # m/s
 F_REF = 193.1         # THz
 DELTA_F = 0.0125      # THz (12.5 GHz)
 
-# Rango ilustrativo (C + L)
 F_MIN = 184.5000
 F_MAX = 195.9375
 
@@ -58,32 +56,12 @@ def generar_tablas_dwdm():
     return tablas
 
 
-def generar_graficos(tablas):
-    os.makedirs("static", exist_ok=True)
-
-    for nombre, filas in tablas.items():
-        n_vals = [f["n"] for f in filas]
-        f_vals = [f["f"] for f in filas]
-
-        plt.figure(figsize=(9, 4))
-        plt.stem(n_vals, f_vals, basefmt=" ")
-        plt.xlabel("Índice n")
-        plt.ylabel("Frecuencia central (THz)")
-        plt.title(f"Rejilla DWDM – Espaciamiento {nombre}")
-        plt.grid(True)
-
-        nombre_archivo = nombre.replace(" ", "_").replace(".", "")
-        plt.savefig(f"static/grafico_{nombre_archivo}.png", dpi=150)
-        plt.close()
-
-
 # ============================================================
-# RUTA PRINCIPAL
+# RUTA WEB
 # ============================================================
 @app.route("/")
 def index():
     tablas = generar_tablas_dwdm()
-    generar_graficos(tablas)
     return render_template("index.html", tablas=tablas)
 
 
