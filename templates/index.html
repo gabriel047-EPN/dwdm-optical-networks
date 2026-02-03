@@ -1,79 +1,75 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<title>DWDM – ITU-T G.694.1</title>
+    <meta charset="UTF-8">
+    <title>DWDM – ITU-T G.694.1</title>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            background-color: #f5f5f5;
+        }
 
-<style>
-body {
-    font-family: Arial, sans-serif;
-    margin: 40px;
-    background-color: #f5f6f7;
-}
+        header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            border-bottom: 3px solid #003366;
+            padding-bottom: 15px;
+            margin-bottom: 30px;
+        }
 
-header {
-    display: flex;
-    gap: 20px;
-    align-items: center;
-    border-bottom: 3px solid #003366;
-    padding-bottom: 15px;
-    margin-bottom: 30px;
-}
+        header img {
+            height: 80px;
+        }
 
-header img {
-    height: 80px;
-}
+        h1, h2 {
+            color: #003366;
+        }
 
-h1, h2, h3 {
-    color: #003366;
-}
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-bottom: 40px;
+            background-color: white;
+        }
 
-table {
-    border-collapse: collapse;
-    width: 100%;
-    background: white;
-    margin-top: 15px;
-}
+        th, td {
+            border: 1px solid #999;
+            padding: 8px;
+            text-align: center;
+        }
 
-th, td {
-    border: 1px solid #999;
-    padding: 6px;
-    text-align: center;
-}
+        th {
+            background-color: #003366;
+            color: white;
+        }
 
-th {
-    background-color: #003366;
-    color: white;
-}
+        button {
+            padding: 10px 15px;
+            margin-bottom: 15px;
+            background-color: #003366;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
 
-button {
-    background-color: #003366;
-    color: white;
-    padding: 8px 14px;
-    border: none;
-    cursor: pointer;
-    margin-top: 10px;
-}
+        .tabla {
+            display: none;
+        }
+    </style>
 
-.seccion {
-    display: none;
-    margin-bottom: 50px;
-}
-</style>
-
-<script>
-function toggle(id) {
-    const div = document.getElementById(id);
-    div.style.display = div.style.display === "none" ? "block" : "none";
-}
-</script>
+    <script>
+        function toggleTabla(id) {
+            const tabla = document.getElementById(id);
+            tabla.style.display = tabla.style.display === "none" ? "block" : "none";
+        }
+    </script>
 </head>
 
 <body>
 
-<!-- ================= ENCABEZADO ================= -->
 <header>
     <img src="{{ url_for('static', filename='logo_epn.png') }}">
     <div>
@@ -87,28 +83,34 @@ function toggle(id) {
 <h1>Rejilla DWDM según ITU-T G.694.1</h1>
 
 <p>
-La recomendación ITU-T G.694.1 define una rejilla fija de frecuencias
-anclada en 193.1 THz. El índice <b>n</b> es común para toda la rejilla,
-y cada espaciamiento selecciona subconjuntos de valores de <b>n</b>.
+La recomendación ITU-T G.694.1 define una rejilla fija DWDM basada en una
+frecuencia de referencia de <b>193.1 THz</b> y una granularidad mínima de
+<b>12.5 GHz</b>. El espaciamiento de canal se define como:
 </p>
 
-<!-- ================= TABLAS DWDM ================= -->
-<h2>Tablas de frecuencias nominales</h2>
+<p><b>Δf = m × 12.5 GHz</b></p>
+
+<hr>
 
 {% for nombre, filas in tablas.items() %}
-<h3>Espaciamiento {{ nombre }}</h3>
 
-<button onclick="toggle('tabla{{ loop.index }}')">
+<h2>Espaciamiento de canal: {{ nombre }}</h2>
+
+<img src="{{ url_for('static', filename='regla_espectral_DWDM_' + nombre + '.png') }}"
+     style="width:100%; margin-bottom:20px;">
+
+<button onclick="toggleTabla('{{ nombre }}')">
     Mostrar / Ocultar tabla
 </button>
 
-<div class="seccion" id="tabla{{ loop.index }}">
+<div id="{{ nombre }}" class="tabla">
 <table>
     <tr>
-        <th>n</th>
-        <th>Frecuencia (THz)</th>
+        <th>Índice n</th>
+        <th>Frecuencia central (THz)</th>
         <th>Longitud de onda (nm)</th>
     </tr>
+
     {% for fila in filas %}
     <tr>
         <td>{{ fila.n }}</td>
@@ -118,7 +120,15 @@ y cada espaciamiento selecciona subconjuntos de valores de <b>n</b>.
     {% endfor %}
 </table>
 </div>
+
 {% endfor %}
 
-<!-- ================= FLEXIBLE GRID ================= -->
-<h2>Representación espectral
+<p>
+<b>Nota:</b> Las longitudes de onda son aproximadas y se obtienen a partir de la
+conversión frecuencia–longitud de onda usando la velocidad de la luz en el vacío.
+Las especificaciones DWDM se definen con respecto a la frecuencia central.
+</p>
+
+</body>
+</html>
+
