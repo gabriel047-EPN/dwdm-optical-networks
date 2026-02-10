@@ -15,8 +15,7 @@ y utilizan las longitudes de onda en un entorno de transmisión óptica.
 
 ## Tecnologías
 - HTML
-- CSS
-- JavaScript
+- Python
 
 ## Uso
 Proyecto orientado a fines demostrativos y de aprendizaje sobre redes ópticas DWDM.
